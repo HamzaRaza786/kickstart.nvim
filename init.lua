@@ -136,10 +136,10 @@ require('lazy').setup({
 
   {
   --Theme inspired by Atom
-    'ellisonleao/onedark.nvim',
+    "folke/tokyonight.nvim",
      priority = 1000,
      config = function()
-      vim.cmd.colorscheme 'onedark'
+      vim.cmd.colorscheme 'tokyonight'
       end,
    },
 
@@ -270,7 +270,8 @@ vim.o.completeopt = 'menuone,noselect'
 -- NOTE: You should make sure your terminal supports this
 vim.o.termguicolors = true
 -- NOTE: Set up colorscheme
-vim.cmd "hi Normal guibg=NONE ctermbg=NONE"
+-- Adding guibg=NONE command before ctermbg will set the background color of editor to terminal color.
+vim.cmd "hi Normal ctermbg=NONE"
 --vim.cmd.colorscheme 'desert'
 
 -- [[ Basic Keymaps ]]
