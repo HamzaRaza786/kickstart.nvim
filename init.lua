@@ -88,7 +88,7 @@ require('lazy').setup({
 
       -- Useful status updates for LSP
       -- NOTE: `opts = {}` is the same as calling `require('fidget').setup({})`
-      { 'j-hui/fidget.nvim', tag = 'legacy', opts = {} },
+      { 'j-hui/fidget.nvim',       tag = 'legacy', opts = {} },
 
       -- Additional lua configuration, makes nvim stuff amazing!
       'folke/neodev.nvim',
@@ -110,7 +110,7 @@ require('lazy').setup({
       'rafamadriz/friendly-snippets',
     },
   },
-  {'ThePrimeagen/harpoon'},
+  { 'ThePrimeagen/harpoon' },
 
   -- Useful plugin to show you pending keybinds.
   { 'folke/which-key.nvim', opts = {} },
@@ -127,21 +127,23 @@ require('lazy').setup({
         changedelete = { text = '~' },
       },
       on_attach = function(bufnr)
-        vim.keymap.set('n', '<leader>gp', require('gitsigns').prev_hunk, { buffer = bufnr, desc = '[G]o to [P]revious Hunk' })
+        vim.keymap.set('n', '<leader>gp', require('gitsigns').prev_hunk,
+          { buffer = bufnr, desc = '[G]o to [P]revious Hunk' })
         vim.keymap.set('n', '<leader>gn', require('gitsigns').next_hunk, { buffer = bufnr, desc = '[G]o to [N]ext Hunk' })
         vim.keymap.set('n', '<leader>ph', require('gitsigns').preview_hunk, { buffer = bufnr, desc = '[P]review [H]unk' })
+        vim.keymap.set('n', '<leader>hd', require('gitsigns').diffthis, { buffer = bufnr, desc = 'Get git diff' })
       end,
     },
   },
 
   {
-  --Theme inspired by Atom
-    "folke/tokyonight.nvim",
-     priority = 1000,
-     config = function()
-      vim.cmd.colorscheme 'tokyonight'
-      end,
-   },
+    --Theme inspired by Atom
+    "catppuccin/nvim",
+    priority = 1000,
+    config = function()
+      vim.cmd.colorscheme 'catppuccin'
+    end,
+  },
 
   {
     -- Set lualine as statusline
@@ -169,7 +171,7 @@ require('lazy').setup({
   },
 
   -- "gc" to comment visual regions/lines
-  { 'numToStr/Comment.nvim', opts = {} },
+  { 'numToStr/Comment.nvim',         opts = {} },
 
   -- Fuzzy Finder (files, lsp, etc)
   { 'nvim-telescope/telescope.nvim', branch = '0.1.x', dependencies = { 'nvim-lua/plenary.nvim' } },
@@ -188,22 +190,22 @@ require('lazy').setup({
   },
 
   {
-  "nvim-tree/nvim-tree.lua",
-  version = "*",
-  lazy = false,
-  dependencies = {
-    "nvim-tree/nvim-web-devicons",
+    "nvim-tree/nvim-tree.lua",
+    version = "*",
+    lazy = false,
+    dependencies = {
+      "nvim-tree/nvim-web-devicons",
+    },
+    config = function()
+      require("nvim-tree").setup {}
+    end,
   },
-  config = function()
-    require("nvim-tree").setup {}
-  end,
-  },
-{
+  {
     'numToStr/Comment.nvim',
     config = function()
-        require('Comment').setup()
+      require('Comment').setup()
     end
-};
+  },
 
   {
     -- Highlight, edit, and navigate code
@@ -298,32 +300,32 @@ vim.api.nvim_create_autocmd('TextYankPost', {
 })
 -- [[ Configure Harpoon ]]
 
-require("harpoon").setup({ 
--- sets the marks upon calling `toggle` on the ui, instead of require `:w`.
-    save_on_toggle = false,
+require("harpoon").setup({
+  -- sets the marks upon calling `toggle` on the ui, instead of require `:w`.
+  save_on_toggle = false,
 
-    -- saves the harpoon file upon every change. disabling is unrecommended.
-    save_on_change = true,
+  -- saves the harpoon file upon every change. disabling is unrecommended.
+  save_on_change = true,
 
-    -- sets harpoon to run the command immediately as it's passed to the terminal when calling `sendCommand`.
-    enter_on_sendcmd = false,
+  -- sets harpoon to run the command immediately as it's passed to the terminal when calling `sendCommand`.
+  enter_on_sendcmd = false,
 
-    -- closes any tmux windows harpoon that harpoon creates when you close Neovim.
-    tmux_autoclose_windows = false,
+  -- closes any tmux windows harpoon that harpoon creates when you close Neovim.
+  tmux_autoclose_windows = false,
 
-    -- filetypes that you want to prevent from adding to the harpoon list menu.
-    excluded_filetypes = { "harpoon" },
+  -- filetypes that you want to prevent from adding to the harpoon list menu.
+  excluded_filetypes = { "harpoon" },
 
-    -- set marks specific to each git branch inside git repository
-    mark_branch = false,
+  -- set marks specific to each git branch inside git repository
+  mark_branch = false,
 
-    -- enable tabline with harpoon marks
-    tabline = false,
-    tabline_prefix = "   ",
-    tabline_suffix = "   ",
+  -- enable tabline with harpoon marks
+  tabline = false,
+  tabline_prefix = "   ",
+  tabline_suffix = "   ",
 })
 
-vim.keymap.set("n", "<leader>t",  require("harpoon.mark").add_file)
+vim.keymap.set("n", "<leader>t", require("harpoon.mark").add_file)
 
 vim.keymap.set("n", "<C-e>", require("harpoon.ui").toggle_quick_menu)
 
@@ -338,13 +340,13 @@ require('telescope').setup {
     mappings = {
       i = {
         ['<C-d>'] = function(bufnr)
-            require("telescope.state").get_status(bufnr).picker.layout_config.scroll_speed = nil
-            return require("telescope.actions").preview_scrolling_down(bufnr)
-          end,
+          require("telescope.state").get_status(bufnr).picker.layout_config.scroll_speed = nil
+          return require("telescope.actions").preview_scrolling_down(bufnr)
+        end,
         ['<C-u>'] = function(bufnr)
-            require("telescope.state").get_status(bufnr).picker.layout_config.scroll_speed = nil
-            return require("telescope.actions").preview_scrolling_up(bufnr)
-          end,      },
+          require("telescope.state").get_status(bufnr).picker.layout_config.scroll_speed = nil
+          return require("telescope.actions").preview_scrolling_up(bufnr)
+        end, },
     },
   },
 }
@@ -402,8 +404,8 @@ local function my_on_attach(bufnr)
   api.config.mappings.default_on_attach(bufnr)
 
   -- custom mappings
-  vim.keymap.set('n', '<C-t>', api.tree.change_root_to_parent,        opts('Up'))
-  vim.keymap.set('n', '?',     api.tree.toggle_help,                  opts('Help'))
+  vim.keymap.set('n', '<C-t>', api.tree.change_root_to_parent, opts('Up'))
+  vim.keymap.set('n', '?', api.tree.toggle_help, opts('Help'))
 end
 vim.keymap.set('n', '<C-n>', ':NvimTreeFindFileToggle<cr>')
 -- pass to setup along with your other options
@@ -414,47 +416,47 @@ require("nvim-tree").setup {
 }
 -- nvim comment setup
 require('Comment').setup({
-    ---Add a space b/w comment and the line
-    padding = true,
-    ---Whether the cursor should stay at its position
-    sticky = true,
-    ---Lines to be ignored while (un)comment
-    ignore = nil,
-    ---LHS of toggle mappings in NORMAL mode
-    toggler = {
-        ---Line-comment toggle keymap
-        line = 'gcc',
-        ---Block-comment toggle keymap
-        block = 'gbc',
-    },
-    ---LHS of operator-pending mappings in NORMAL and VISUAL mode
-    opleader = {
-        ---Line-comment keymap
-        line = 'gc',
-        ---Block-comment keymap
-        block = 'gb',
-    },
-    ---LHS of extra mappings
-    extra = {
-        ---Add comment on the line above
-        above = 'gcO',
-        ---Add comment on the line below
-        below = 'gco',
-        ---Add comment at the end of line
-        eol = 'gcA',
-    },
-    ---Enable keybindings
-    ---NOTE: If given `false` then the plugin won't create any mappings
-    mappings = {
-        ---Operator-pending mapping; `gcc` `gbc` `gc[count]{motion}` `gb[count]{motion}`
-        basic = true,
-        ---Extra mapping; `gco`, `gcO`, `gcA`
-        extra = true,
-    },
-    ---Function to call before (un)comment
-    pre_hook = nil,
-    ---Function to call after (un)comment
-    post_hook = nil,
+  ---Add a space b/w comment and the line
+  padding = true,
+  ---Whether the cursor should stay at its position
+  sticky = true,
+  ---Lines to be ignored while (un)comment
+  ignore = nil,
+  ---LHS of toggle mappings in NORMAL mode
+  toggler = {
+    ---Line-comment toggle keymap
+    line = 'gcc',
+    ---Block-comment toggle keymap
+    block = 'gbc',
+  },
+  ---LHS of operator-pending mappings in NORMAL and VISUAL mode
+  opleader = {
+    ---Line-comment keymap
+    line = 'gc',
+    ---Block-comment keymap
+    block = 'gb',
+  },
+  ---LHS of extra mappings
+  extra = {
+    ---Add comment on the line above
+    above = 'gcO',
+    ---Add comment on the line below
+    below = 'gco',
+    ---Add comment at the end of line
+    eol = 'gcA',
+  },
+  ---Enable keybindings
+  ---NOTE: If given `false` then the plugin won't create any mappings
+  mappings = {
+    ---Operator-pending mapping; `gcc` `gbc` `gc[count]{motion}` `gb[count]{motion}`
+    basic = true,
+    ---Extra mapping; `gco`, `gcO`, `gcA`
+    extra = true,
+  },
+  ---Function to call before (un)comment
+  pre_hook = nil,
+  ---Function to call after (un)comment
+  post_hook = nil,
 }
 )
 -- [[ Configure Treesitter ]]
@@ -528,6 +530,7 @@ vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = 'Go to previous dia
 vim.keymap.set('n', ']d', vim.diagnostic.goto_next, { desc = 'Go to next diagnostic message' })
 vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, { desc = 'Open floating diagnostic message' })
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostics list' })
+vim.keymap.set('n', 'f', vim.lsp.buf.format, { desc = 'Format the file' });
 -- [[ Configure LSP ]]
 --  This function gets run when an LSP connects to a particular buffer.
 local on_attach = function(_, bufnr)
@@ -546,7 +549,7 @@ local on_attach = function(_, bufnr)
   end
 
   nmap('<leader>rn', vim.lsp.buf.rename, '[R]e[n]ame')
-  nmap('<leader>ca', vim.lsp.buf.code_action, '[C]ode [A]ction')
+  nmap('<leader>qf', vim.lsp.buf.code_action, '[C]ode [A]ction')
 
   nmap('gd', vim.lsp.buf.definition, '[G]oto [D]efinition')
   nmap('gr', require('telescope.builtin').lsp_references, '[G]oto [R]eferences')
@@ -665,5 +668,5 @@ cmp.setup {
   },
 }
 
--- The line beneath this is called `modeline`. See `:help modeline`
--- vim: ts=2 sts=2 sw=2 et
+-- The line beneath this is called `modeline`. See `:help `
+-- vim: ts=2 sts=2 sw=2et
