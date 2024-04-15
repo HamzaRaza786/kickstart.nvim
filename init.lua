@@ -152,7 +152,7 @@ require('lazy').setup({
     opts = {
       options = {
         icons_enabled = false,
-        theme = 'onedark',
+        theme = 'catppuccin',
         component_separators = '|',
         section_separators = '',
       },
@@ -374,6 +374,8 @@ vim.keymap.set('n', '<leader>sd', require('telescope.builtin').diagnostics, { de
 -- vim.g.loaded_netrw = 1
 -- vim.g.loaded_netrwPlugin = 1
 
+-- set insert cursor to broad mode
+vim.opt.guicursor = "n-v-i-c:block-Cursor"
 -- set termguicolors to enable highlight groups
 vim.opt.termguicolors = true
 
