@@ -375,7 +375,8 @@ vim.keymap.set('n', '<leader>sd', require('telescope.builtin').diagnostics, { de
 -- vim.g.loaded_netrwPlugin = 1
 
 -- set insert cursor to broad mode
-vim.opt.guicursor = "n-v-i-c:block-Cursor"
+vim.opt.guicursor = "n-v-c:block-Cursor"
+vim.opt.guicursor = "i-ci:block-Cursor-blinkon200-blinkoff150"
 -- set termguicolors to enable highlight groups
 vim.opt.termguicolors = true
 
