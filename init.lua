@@ -160,21 +160,23 @@ require('lazy').setup({
   },
 
   {
-    -- Add indentation guides even on blank lines
     'lukas-reineke/indent-blankline.nvim',
-    -- Enable `lukas-reineke/indent-blankline.nvim`
-    -- See `:help indent_blankline.txt`
+    version = 'v2.*', -- Use the latest version 2 release
     opts = {
       char = '┊',
       show_trailing_blankline_indent = false,
     },
   },
-
   -- "gc" to comment visual regions/lines
-  { 'numToStr/Comment.nvim',         opts = {} },
+  { 'numToStr/Comment.nvim',  opts = {} },
 
   -- Fuzzy Finder (files, lsp, etc)
-  { 'nvim-telescope/telescope.nvim', branch = '0.1.x', dependencies = { 'nvim-lua/plenary.nvim' } },
+  {
+    'nvim-telescope/telescope.nvim',
+    branch = '0.1.x',
+    dependencies = { 'nvim-lua/plenary.nvim', "debugloop/telescope-undo.nvim",
+    }
+  },
 
   -- Fuzzy Finder Algorithm which requires local dependencies to be built.
   -- Only load if `make` is available. Make sure you have the system
@@ -213,6 +215,37 @@ require('lazy').setup({
     dependencies = {
       'nvim-treesitter/nvim-treesitter-textobjects',
     },
+    keys = {
+      { -- lazy style key map
+        "<leader>u",
+        "<cmd>Telescope undo<cr>",
+        desc = "undo history",
+      },
+    },
+    opts = {
+      -- don't use `defaults = { }` here, do this in the main telescope spec
+      extensions = {
+        undo = {
+          use_delta = true,
+          use_custom_command = nil, -- setting this implies `use_delta = false`. Accepted format is: { "bash", "-c", "echo '$DIFF' | delta" }
+          side_by_side = false,
+          vim_diff_opts = {
+            ctxlen = vim.o.scrolloff,
+          },
+          entry_format = "state #$ID, $STAT, $TIME",
+          time_format = "",
+          saved_only = false,
+        },
+        -- no other extensions here, they can have their own spec too
+      },
+    },
+    config = function(_, opts)
+      -- Calling telescope's setup from multiple specs does not hurt, it will happily merge the
+      -- configs for us. We won't use data, as everything is in it's own namespace (telescope
+      -- defaults, as well as each extension).
+      require("telescope").setup(opts)
+      require("telescope").load_extension("undo")
+    end,
     build = ':TSUpdate',
   },
 
@@ -274,6 +307,7 @@ vim.o.termguicolors = true
 -- NOTE: Set up colorscheme
 -- Adding guibg=NONE command before ctermbg will set the background color of editor to terminal color.
 vim.cmd "hi Normal ctermbg=NONE"
+vim.cmd "set tabstop=4"
 --vim.cmd.colorscheme 'desert'
 
 -- [[ Basic Keymaps ]]
@@ -329,14 +363,15 @@ vim.keymap.set("n", "<leader>t", require("harpoon.mark").add_file)
 
 vim.keymap.set("n", "<C-e>", require("harpoon.ui").toggle_quick_menu)
 
-vim.keymap.set("n", "<C-t>", function() require("harpoon.ui").nav_file(1) end)
-vim.keymap.set("n", "<C-h>", function() require("harpoon.ui").nav_file(2) end)
-vim.keymap.set("n", "<C-s>", function() require("harpoon.ui").nav_file(3) end)
-vim.keymap.set("n", "<C-x>", function() require("harpoon.ui").nav_file(4) end)
+vim.keymap.set("n", "<C-s>", function() require("harpoon.ui").nav_file(1) end)
+vim.keymap.set("n", "<C-x>", function() require("harpoon.ui").nav_file(2) end)
+vim.keymap.set("n", "<C-t>", function() require("harpoon.ui").nav_file(3) end)
+vim.keymap.set("n", "<C-h>", function() require("harpoon.ui").nav_file(4) end)
 -- [[ Configure Telescope ]]
 -- See `:help telescope` and `:help telescope.setup()`
 require('telescope').setup {
   defaults = {
+    path_diplay = { "truncate" },
     mappings = {
       i = {
         ['<C-d>'] = function(bufnr)
@@ -349,14 +384,34 @@ require('telescope').setup {
         end, },
     },
   },
+  extensions = {
+    undo = {
+      mappings = {
+        i = {
+          ["<cr>"] = require("telescope-undo.actions").yank_additions,
+          ["<S-cr>"] = require("telescope-undo.actions").yank_deletions,
+          ["<C-cr>"] = require("telescope-undo.actions").restore,
+          -- alternative defaults, for users whose terminals do questionable things with modified <cr>
+          ["<C-y>"] = require("telescope-undo.actions").yank_deletions,
+          ["<C-r>"] = require("telescope-undo.actions").restore,
+        },
+        n = {
+          ["y"] = require("telescope-undo.actions").yank_additions,
+          ["Y"] = require("telescope-undo.actions").yank_deletions,
+          ["u"] = require("telescope-undo.actions").restore,
+        },
+      },
+    },
+  },
 }
 
 -- Enable telescope fzf native, if installed
 pcall(require('telescope').load_extension, 'fzf')
 -- See `:help telescope.builtin`
 vim.keymap.set('n', '<leader>?', require('telescope.builtin').oldfiles, { desc = '[?] Find recently opened files' })
-vim.keymap.set('n', '<leader><space>', require('telescope.builtin').buffers, { desc = '[ ] Find existing buffers' })
+vim.keymap.set('n', '<leader><space>', require('telescope.builtin').buffers, { desc = '[ ] find existing buffers' })
 vim.keymap.set('n', '<leader>/', function()
+  --Undo tree
   -- You can pass additional configuration to telescope to change theme, layout, etc.
   require('telescope.builtin').current_buffer_fuzzy_find(require('telescope.themes').get_dropdown {
     winblend = 10,
@@ -365,7 +420,10 @@ vim.keymap.set('n', '<leader>/', function()
 end, { desc = '[/] Fuzzily search in current buffer' })
 
 vim.keymap.set('n', '<leader>gf', require('telescope.builtin').git_files, { desc = 'Search [G]it [F]iles' })
-vim.keymap.set('n', '<leader>sf', require('telescope.builtin').find_files, { desc = '[S]earch [F]iles' })
+vim.keymap.set('n', '<leader>sf', function()
+    require('telescope.builtin').find_files { path_display = { "truncate" } }
+  end,
+  { desc = '[S]earch [F]iles' })
 vim.keymap.set('n', '<leader>sh', require('telescope.builtin').help_tags, { desc = '[S]earch [H]elp' })
 vim.keymap.set('n', '<leader>sw', require('telescope.builtin').grep_string, { desc = '[S]earch current [W]ord' })
 vim.keymap.set('n', '<leader>sg', require('telescope.builtin').live_grep, { desc = '[S]earch by [G]rep' })
@@ -375,8 +433,8 @@ vim.keymap.set('n', '<leader>sd', require('telescope.builtin').diagnostics, { de
 -- vim.g.loaded_netrwPlugin = 1
 
 -- set insert cursor to broad mode
-vim.opt.guicursor = "n-v-c:block-Cursor"
-vim.opt.guicursor = "i-ci:block-Cursor-blinkon200-blinkoff150"
+-- vim.opt.guicursor = "n-v-c:block-Cursor"
+-- vim.opt.guicursor = "i-ci:block-Cursor-blinkon200-blinkoff150"
 -- set termguicolors to enable highlight groups
 vim.opt.termguicolors = true
 
@@ -672,4 +730,4 @@ cmp.setup {
 }
 
 -- The line beneath this is called `modeline`. See `:help `
--- vim: ts=2 sts=2 sw=2et
+-- vim: ts=2 sts=2 sw=2 et
