@@ -173,7 +173,7 @@ require('lazy').setup({
   -- Fuzzy Finder (files, lsp, etc)
   {
     'nvim-telescope/telescope.nvim',
-    branch = '0.1.x',
+    tag = '0.1.4',
     dependencies = { 'nvim-lua/plenary.nvim', "debugloop/telescope-undo.nvim",
     }
   },
@@ -208,7 +208,13 @@ require('lazy').setup({
       require('Comment').setup()
     end
   },
-
+  {
+    "github/copilot.vim",
+    cmd = 'Copilot',
+    config = function()
+      -- Optionally, set Copilot settings here
+    end,
+  },
   {
     -- Highlight, edit, and navigate code
     'nvim-treesitter/nvim-treesitter',
@@ -308,6 +314,8 @@ vim.o.termguicolors = true
 -- Adding guibg=NONE command before ctermbg will set the background color of editor to terminal color.
 vim.cmd "hi Normal ctermbg=NONE"
 vim.cmd "set tabstop=4"
+-- bash syntax
+vim.cmd "set syntax=sh"
 --vim.cmd.colorscheme 'desert'
 
 -- [[ Basic Keymaps ]]
@@ -529,7 +537,7 @@ require('nvim-treesitter.configs').setup {
   -- Autoinstall languages that are not installed. Defaults to false (but you can change for yourself!)
   auto_install = false,
 
-  highlight = { enable = true },
+  highlight = { enable = true, disable = { "bash" }, },
   indent = { enable = true },
   incremental_selection = {
     enable = true,
@@ -646,7 +654,21 @@ local servers = {
   -- clangd = {},
   -- gopls = {},
   -- pyright = {},
-  -- rust_analyzer = {},
+  rust_analyzer = {
+    -- Custom rust-analyzer settings
+    ["rust-analyzer"] = {
+      cargo = {
+        allFeatures = true,
+        checkOnSave = {
+          command = "clippy", -- Ensures rust-analyzer uses `cargo check` without `--keep-going`
+          extraArgs = {},
+        },
+      },
+      diagnostics = {
+        enable = true,
+      },
+    },
+  },
   -- tsserver = {},
 
   lua_ls = {
@@ -657,6 +679,8 @@ local servers = {
   },
 }
 
+vim.g.copilot_no_tab_map = false -- Disable default Tab mapping
+-- vim.api.nvim_set_keymap("i", "<C-J>", 'copilot#Accept("<CR>")', { expr = true, silent = true })
 -- Setup neovim lua configuration
 require('neodev').setup()
 
