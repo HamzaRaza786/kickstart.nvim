@@ -161,11 +161,17 @@ require('lazy').setup({
 
   {
     'lukas-reineke/indent-blankline.nvim',
-    version = 'v2.*', -- Use the latest version 2 release
+    main = 'ibl',
     opts = {
-      char = '┊',
-      show_trailing_blankline_indent = false,
-    },
+      indent = {
+        char = "|"
+      },
+      scope = {
+        -- Replace `enable = true` with `show_start = true` or `show_end = true` depending on what you need
+        show_start = true,
+        show_end = false,
+      }
+    }
   },
   -- "gc" to comment visual regions/lines
   { 'numToStr/Comment.nvim',  opts = {} },
@@ -267,6 +273,27 @@ require('lazy').setup({
   --
   --    For additional information see: https://github.com/folke/lazy.nvim#-structuring-your-plugins
   { import = 'custom.plugins' },
+  {
+    "echasnovski/mini.pairs",
+    version = "*",
+    event = "InsertEnter",
+    config = function()
+      require("mini.pairs").setup()
+    end,
+  },
+
+  {
+    "folke/trouble.nvim",
+    opts = {}, -- for default options, refer to the configuration section for custom setup.
+    cmd = "Trouble",
+    keys = {
+      {
+        "<leader>xx",
+        "<cmd>Trouble diagnostics toggle<cr>",
+        desc = "Diagnostics (Trouble)",
+      }, },
+  }
+
 }, {})
 
 -- [[ Setting options ]]
